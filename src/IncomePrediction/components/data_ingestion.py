@@ -15,6 +15,7 @@ class Data_Ingestion:
         try:
             data = pd.read_csv(os.path(self.training_file))
             logging.info("read data as dataframe and data ingestion completed")
+            return data
 
         except Exception as e:
             logging.info("error occured at data ingestion stage")
