@@ -13,7 +13,7 @@ class Data_Ingestion:
     def initiate_data_ingestion(self):
         logging.info("started initiation of data ingestion")
         try:
-            data = pd.read_csv(os.path(self.training_file))
+            data = pd.read_csv(os.path(self.training_file),skipinitialspace=True)
             logging.info("read data as dataframe and data ingestion completed")
             return data
 
