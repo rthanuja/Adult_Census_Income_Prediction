@@ -44,6 +44,7 @@ class KMeansClustering:
             cluster = kmeans.fit_predict(data)
             data["cluster"] = cluster
             logging.info(f"successfully created {self.kn.knee} clusters.exited create clusters method")
+            return data
         
         except Exception as e:
             logging.info("error occured ehile creating clusters")

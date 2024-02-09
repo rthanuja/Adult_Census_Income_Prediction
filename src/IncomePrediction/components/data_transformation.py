@@ -1,9 +1,11 @@
 from src.IncomePrediction.logger import logging
 from src.IncomePrediction.exception import customException
+from src.IncomePrediction.components.clustering import KMeansClustering
 from sklearn.preprocessing import OneHotEncoder,StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
+from imblearn.over_sampling import RandomOverSampler
 
 import numpy as np
 import pandas as pd
@@ -91,9 +93,19 @@ class DataTranformation:
             cols = ','.join(X.columns.tolist())
             cols= cols.replace("num_pipeline__","",).replace("cat_pipeline__","")
             X.columns=cols.split(",")
+            randomsampler = RandomOverSampler()
+            X,Y = randomsampler.fit_resample(X,Y)
 
+            kmeans = KMeansClustering()
+            Number_of_Clusters = kmeans.elbow_plot(X)
+            X = kmeans.create_clusters(X,Number_of_Clusters)
+            X['Labels'] = Y
+
+            logging.info("preprocessing done succesfully")
+            return X
+        
         except Exception as e:
-            
+            logging.info("error occured while initializing data transformation")            
             raise customException(e,sys)
 
 
