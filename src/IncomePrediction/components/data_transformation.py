@@ -1,6 +1,7 @@
 from src.IncomePrediction.logger import logging
 from src.IncomePrediction.exception import customException
 from src.IncomePrediction.components.clustering import KMeansClustering
+
 from sklearn.preprocessing import OneHotEncoder,StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
