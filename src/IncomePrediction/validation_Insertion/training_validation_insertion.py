@@ -9,8 +9,8 @@ import sys
 class train_validation:
 
     "This class is used to validate the training raw data"
-    def __init__(self):
-        self.raw_data = Training_Data_Validation()
+    def __init__(self,path):
+        self.raw_data = Training_Data_Validation(path)
         self.DBOperation = DBOperation()
         self.DataTransform = DataTransform()
 
