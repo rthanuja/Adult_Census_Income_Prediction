@@ -1,11 +1,12 @@
 from src.IncomePrediction.logger import logging
 from src.IncomePrediction.exception import customException
+from src.IncomePrediction.utils.file_methods import File_Operation
 
 from sklearn.cluster import KMeans
 from kneed import KneeLocator
 import matplotlib.pyplot as  plt
 import sys
-
+import os
 
 class KMeansClustering:
     
@@ -26,6 +27,9 @@ class KMeansClustering:
             plt.title('The Elbow Method')
             plt.xlabel('Number of clusters')
             plt.ylabel('WCSS')
+            os.makedirs('artifacts',exist_ok=True)
+            plt.savefig('artifacts/k-means_elbow.PNG')
+
             self.kn = KneeLocator(x=range(1,11),y=wcss,curve='convex',direction='decreasing')
             logging.info(f"optimum number of clusters : {self.kn.knee}")
             return self.kn.knee
@@ -41,6 +45,9 @@ class KMeansClustering:
         logging.info("entered the createclusters of kmeans clustering")
         try:
             kmeans = KMeans(n_clusters=NumberOfClusters,init='k-means++',random_state=42)
+            file_obj =File_Operation()
+            file_obj.save_model(file_path=os.path.join('artifacts','KMeans.sav'),
+                                obj=kmeans)
             cluster = kmeans.fit_predict(data)
             data["cluster"] = cluster
             logging.info(f"successfully created {self.kn.knee} clusters.exited create clusters method")
