@@ -2,4 +2,6 @@ pandas
 numpy
 scikit-learn
 kneed
+flask
+Flask-MonitoringDashboard==3.0.6
 -e .
