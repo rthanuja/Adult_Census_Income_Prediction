@@ -82,11 +82,14 @@ class DataTranformation:
     def initialize_data_transformation(self,data):
         try:
             data.replace('?', np.NaN,inplace=True)
+            logging.info(f"? replaced with NaN")
             data.drop(columns='education',inplace=True)
+            logging.info(f"dropped education column")
             data = self.reduce_categories(data)
             X = data.drop(columns='Income')
             Y = data['Income']
             Y = Y.map({'<=50K': 0, '>50K': 1})
+            logging.info(f"{Y.isnull().sum()} null values in y")
             preprocessor = self.get_data_tranformation()
             arr = preprocessor.fit_transform(X)
             cols = preprocessor.get_feature_names_out(X.columns)

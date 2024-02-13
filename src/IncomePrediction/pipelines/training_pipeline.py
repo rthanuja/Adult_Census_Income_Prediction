@@ -42,7 +42,7 @@ class TrainModel:
                 best_model_name,best_model = model_finder.get_best_model(x_train,y_train,x_test,y_test)
 
                 file_obj = File_Operation()
-                filename = best_model_name+str(i)
+                filename = best_model_name+str(i)+'.sav'
                 file_obj.save_model(file_path = os.path.join('artifacts',filename),
                                     obj = best_model)
                 logging.info("successful end of training")
