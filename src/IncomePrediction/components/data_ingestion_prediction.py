@@ -5,15 +5,15 @@ import pandas as pd
 import os
 import sys
 
-class Data_Ingestion:
+class Data_Ingestion_Prediction:
 
     def __init__(self):
-        self.training_file='Training_FileFromDB/InputFile.csv'
+        self.prediction_file='Prediction_FileFromDB/InputFile.csv'
 
-    def initiate_data_ingestion(self):
+    def initiate_data_ingestion_prediction(self):
         logging.info("started initiation of data ingestion")
         try:
-            data = pd.read_csv(os.path.join(self.training_file),skipinitialspace=True)
+            data = pd.read_csv(os.path.join(self.prediction_file),skipinitialspace=True)
             data = data.applymap(lambda x:x.strip() if isinstance(x,str) else x)
 
             logging.info("read data as dataframe and data ingestion completed")
