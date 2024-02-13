@@ -37,27 +37,36 @@ class Training_Data_Validation:
             ColumnNames = dic['ColName']
 
             logging.info("values from schema extracted successfully!")
+            logging.info(f"LengthOfDateStampInFile :{LengthOfDateStampInFile},
+                          LengthOfTimeStampInFile: {LengthOfTimeStampInFile},
+                          NumberofColumns: {NumberofColumns},
+                          ColumnNames : {ColumnNames}")
 
             return LengthOfDateStampInFile,LengthOfTimeStampInFile,NumberofColumns,ColumnNames
 
         except Exception as e:
-            logging.info(f"{type(e).__name__}: ocurred while extracting values from schema") 
+            logging.info(f"{type(e).__name__}: ocurred while extracting values from training schema") 
             raise customException(e,sys)
         
     
     def CreateDirectoryForGoodBadRawData(self):
+
         """This method creates a directory for creating directory for good and bad raw data validated"""
+
         logging.info("creating directory for good and bad data")
         try:
             os.makedirs(os.path.dirname(os.path.join(self.validation_config.Good_raw_training_path)),exist_ok=True)
             os.makedirs(os.path.dirname(os.path.join(self.validation_config.Bad_raw_training_path)),exist_ok=True)
+            logging.info("created directory for good and bad data in training succesfully")
 
         except Exception as e:
             logging.info(f"{type(e).__name__} error occured while creating directory for good and bad raw data validated")
             raise customException(e,sys)
 
     def DeleteExistingTrainingGoodRawDataFolder(self):
+
         """This method deletes the directory of the good raw folder"""
+        
         logging.info("deleting good raw data directory")
         try:
             path = "Training_Raw_Data_validated/"
@@ -74,8 +83,8 @@ class Training_Data_Validation:
         logging.info("deleting bad raw data directory")
         try:
             path = "Training_Raw_Data_validated/"
-            if os.path.isdir(path+'Bad_Raw/'):
-                shutil.rmtree(path+'Bad_Raw/')
+            if os.path.isdir(os.path.join(path,'Bad_Raw/')):
+                shutil.rmtree(os.path.join(path,'Bad_Raw/'))
                 logging.info("Bad_raw directory removed successfully!")
 
         except Exception as e:
@@ -91,13 +100,13 @@ class Training_Data_Validation:
         try:
             source = self.validation_config.Bad_raw_training_path
             if os.path.isdir(source):
-                os.makedirs(os.path.dirname(os.path.join(self.validation_config.Bad_archive_data_path)),exist_ok=True)
+                os.makedirs(os.path.join(self.validation_config.Bad_archive_data_path),exist_ok=True)
                 desti =  'Training_Archived_Bad_Data/BadData_' + str(date)+"_"+str(time)
                 os.makedirs(desti,exist_ok=True)
                 files = os.listdir(source)
                 for f in files:
                     if f not in os.listdir(desti):
-                        shutil.move(source+f,desti)
+                        shutil.move(os.path.join(source,f),desti)
                 logging.info("bad data moved to archive bad data folder")
         
         except Exception as e:
@@ -121,20 +130,20 @@ class Training_Data_Validation:
                 if re.match(regex,filename):
                     SplitAtDot = filename.split(".csv")
                     SplitAtUnderScore = SplitAtDot[0].split("_")
-                    if SplitAtUnderScore[1] == LengthOfDateStampInFile:
-                        if SplitAtUnderScore[2] == LengthOfTimeStampInFile:
+                    if len(SplitAtUnderScore[1]) == LengthOfDateStampInFile:
+                        if len(SplitAtUnderScore[2]) == LengthOfTimeStampInFile:
                             shutil.copy("Training_Batch_Files/" + filename, self.validation_config.Good_raw_training_path)
-                            logging(f"Valid File Name!! File moved to Good Raw Folder :: { filename}")
+                            logging.info(f"Valid File Name!! File moved to Good Raw Folder :: { filename}")
                         else:
                             shutil.copy("Training_Batch_Files/" + filename, self.validation_config.Bad_raw_training_path)
-                            logging(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
+                            logging.info(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
 
                     else:
                         shutil.copy("Training_Batch_Files/" + filename, self.validation_config.Bad_raw_training_path)
-                        logging(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
+                        logging.info(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
                 else:
                     shutil.copy("Training_Batch_Files/" + filename, self.validation_config.Bad_raw_training_path)
-                    logging(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
+                    logging.info(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
             logging.info("filename validation completed")
         except Exception as e:
             logging.info("Error occured while validating filename")
@@ -146,13 +155,13 @@ class Training_Data_Validation:
         else moved to good raw folder"""
         logging.info("column length validation started")
         try:
-            for file in os.listdir(self.validation_config.Good_raw_training_path):
-                csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_training_path+file))
+            for file in os.listdir(os.path.join(self.validation_config.Good_raw_training_path)):
+                csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_training_path,file))
                 if csv.shape[1] == NumberofColumns:
-                    pass
+                    logging.info(f"{file} validated for column length successfully")
                 else:
-                    shutil.move("Training_Raw_files_validated/Good_Raw/" + file, self.validation_config.Bad_raw_training_path)
-                    logging(f"Invalid Column length for File!! File moved to Bad Raw Folder :: { filename}")
+                    shutil.move(os.path.join(self.validation_config.Good_raw_training_path,file),os.path.join(self.validation_config.Bad_raw_training_path))
+                    logging.info(f"Invalid Column length for File!! File moved to Bad Raw Folder :: { file}")
             logging.info("column length validation completed")
 
         except Exception as e:
@@ -168,8 +177,8 @@ class Training_Data_Validation:
                 csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_training_path+file))
                 for col in csv:
                     if csv[col].count() == 0:
-                        shutil.move("Training_Raw_files_validated/Good_Raw/" + file, self.validation_config.Bad_raw_training_path)
-                        logging(f"Missing values in whole Column in the File!! File moved to Bad Raw Folder :: { filename}")
+                        shutil.move(os.path.join(self.validation_config.Good_raw_training_path, file), os.path.join(self.validation_config.Bad_raw_training_path))
+                        logging.info(f"Missing values in whole Column in the File!! File moved to Bad Raw Folder :: { file}")
                         break
             logging.info("validation of missing values in whole column completed")
         except Exception as e:

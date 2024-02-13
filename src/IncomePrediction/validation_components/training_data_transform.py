@@ -1,6 +1,7 @@
 from src.IncomePrediction.logger import logging
 from src.IncomePrediction.exception import customException
 from os import listdir
+import os
 import sys
 import pandas as pd
 
@@ -14,9 +15,9 @@ class DataTransform:
         """This method is used to insert quotes to string data for loading into sql database"""
         logging.info("data transformation started for raw data to move to sql")
         try:
-            filelist = [f for f in listdir(self.GoodDataPath)]
+            filelist = [f for f in listdir(os.path.join(self.GoodDataPath))]
             for file in filelist:
-                data = pd.read_csv(self.goodDataPath + "/" + file)
+                data = pd.read_csv(self.GoodDataPath + "/" + file)
                 # list of columns with string datatype variables
                 columns = ['Income', 'workclass','education', 'marital-status', 'occupation', 'relationship',
                             'race','sex', 'native-country']

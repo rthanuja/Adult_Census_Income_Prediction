@@ -23,13 +23,14 @@ class DBOperation:
         """This method is used to create a database with a given name if already exists opens the connection to db"""
 
         logging.info("connection to database started")
-        try:        
+        try:
+            os.makedirs(self.path,exist_ok=True) 
             conn = sqlite3.connect(self.path+DatabaseName+'.db')
             logging.info("connection completed")
             return conn
         
         except Exception as e:
-            logging.info("error while connecting to database")
+            logging.info(f"{e} :error while connecting to database")
             raise customException(e,sys)
         
     def CreateTableDb(self,DatabaseName,col_names):
@@ -48,7 +49,7 @@ class DBOperation:
                 for key in col_names.keys():
                     type = col_names[key]
                     try:
-                        cursor.execute('Alter table good_raw_data add "{column_name}" {data_type}'.format(column_name=key,datatype=type))
+                        cursor.execute('Alter table good_raw_data add "{column_name}" {data_type}'.format(column_name=key,data_type=type))
                         logging.info(f"added {key} to table successfully")
                     except:
                         cursor.execute('create table if not exists good_raw_data ({column_name} {data_type})'.format(column_name=key,data_type=type))
@@ -83,7 +84,7 @@ class DBOperation:
                             except Exception as e:
                                 logging.info(f"{type(e).__name__} error occured at {line[0]} in {file}")
                                 raise customException(e,sys)
-                logging.info("inserting data to able completed")
+                logging.info("inserting data to table completed")
 
             except Exception as e:
                 conn.rollback()
