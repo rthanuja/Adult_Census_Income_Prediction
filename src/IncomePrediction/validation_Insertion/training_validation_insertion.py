@@ -21,6 +21,7 @@ class train_validation:
             self.raw_data.ColumnLengthValidation(NumberofColumns)
             self.raw_data.ValidateMissingValuesinWholeColumn()
             self.DataTransform.DataFormatForSql()
+            self.DBOperation.DatabaseConnection(DatabaseName='Training')
             self.DBOperation.CreateTableDb('Training',ColumnNames)
             self.DBOperation.InsertGoodDataToTable('Training')
             self.raw_data.DeleteExistingTrainingGoodRawDataFolder()
@@ -31,3 +32,4 @@ class train_validation:
         except Exception as e:
             logging.info("train_validation not successful")
             raise customException(e,sys)
+
