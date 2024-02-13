@@ -25,11 +25,11 @@ class predict_validation:
             self.DBOperation.DatabaseConnection(DatabaseName='Prediction')
             self.DBOperation.CreateTableDb('Prediction',ColumnNames)
             self.DBOperation.InsertGoodDataToTable('Prediction')
-            self.raw_data.DeleteExistingTrainingGoodRawDataFolder()
+            self.raw_data.DeleteExistingPredictionGoodRawDataFolder()
             self.raw_data.MoveBadDataToArchiveData()
-            self.raw_data.DeleteExistingTrainingBadRawDataFolder()
+            self.raw_data.DeleteExistingPredictionBadRawDataFolder()
             self.DBOperation.InputDataFromTableToCSV('Prediction')
 
         except Exception as e:
-            logging.info("train_validation not successful")
+            logging.info("Prediction_validation not successful")
             raise customException(e,sys)

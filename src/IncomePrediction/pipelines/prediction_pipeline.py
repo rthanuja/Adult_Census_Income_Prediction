@@ -47,8 +47,8 @@ class Prediction:
             for i in list_of_clusters:
                 cluster_data= data[data['clusters']==i]
                 cluster_data = cluster_data.drop(['clusters'],axis=1)
-                model_name = file_loader.find_correct_model_file(i)
-                model = file_loader.load_model(file_path)#correct filepath
+                filepath = file_loader.find_correct_model_file(i)
+                model = file_loader.load_model(filepath)#correct filepath
                 result=(model.predict(cluster_data))
                 for res in result:
                     if res==0:
@@ -56,7 +56,13 @@ class Prediction:
                     else:
                         predictions.append('>50K')
 
-            
+            final= pd.DataFrame(list(zip(predictions)),columns=['Predictions'])
+            path="Prediction_Output_File/Predictions.csv"
+            final.to_csv(os.path.join(path),header=True,mode='a+')
+            logging.info("end of prediction")
+
         except Exception as e:
-            logging.info("")
+            logging.info(f"{e}: error occured while prediction")
             raise customException(e,sys)
+
+        return path

@@ -19,7 +19,7 @@ class Prediction_Data_Validation_Config:
 
 
 class Prediction_Data_Validation:
-    """This class takes the input as path of training batch files and gives validated """
+    """This class takes the input as path of prediction batch files and gives validated """
     def __init__(self,path):
         self.batch_directory = path
         self.schema_path = 'schema_prediction.json'
@@ -38,9 +38,9 @@ class Prediction_Data_Validation:
             ColumnNames = dic['ColName']
 
             logging.info("values from schema extracted successfully!")
-            logging.info(f"LengthOfDateStampInFile :{LengthOfDateStampInFile},
-                          LengthOfTimeStampInFile: {LengthOfTimeStampInFile},
-                          NumberofColumns: {NumberofColumns},
+            logging.info(f"LengthOfDateStampInFile :{LengthOfDateStampInFile}\
+                          LengthOfTimeStampInFile: {LengthOfTimeStampInFile}\
+                          NumberofColumns: {NumberofColumns}\
                           ColumnNames : {ColumnNames}")
 
             
@@ -58,8 +58,8 @@ class Prediction_Data_Validation:
 
         logging.info("creating directory for good and bad data in prediction")
         try:
-            os.makedirs(os.path.dirname(os.path.join(self.validation_config.Good_raw_training_path)),exist_ok=True)
-            os.makedirs(os.path.dirname(os.path.join(self.validation_config.Bad_raw_training_path)),exist_ok=True)
+            os.makedirs(os.path.dirname(os.path.join(self.validation_config.Good_raw_prediction_path)),exist_ok=True)
+            os.makedirs(os.path.dirname(os.path.join(self.validation_config.Bad_raw_prediction_path)),exist_ok=True)
             logging.info("created directory for good and bad data in prediction succesfully")
 
         except Exception as e:
@@ -108,7 +108,7 @@ class Prediction_Data_Validation:
         date = now.date()
         time = now.strftime('%H%M%S')
         try:
-            source = self.validation_config.Bad_raw_training_path
+            source = self.validation_config.Bad_raw_prediction_path
             if os.path.isdir(source):
                 os.makedirs(os.path.join(self.validation_config.Bad_archive_data_path),exist_ok=True)
                 desti =  'Prediction_Archived_Bad_Data/BadData_' + str(date)+"_"+str(time)
@@ -127,10 +127,10 @@ class Prediction_Data_Validation:
 
         """This method validates the filename as per predefined schema.If it is not matched moved to bad raw data folder
         else moved to good raw folder"""
-
+        logging.info("Entered filename validation")
         # delete the directories for good and bad data in case last run was unsuccessful and folders were not deleted.
-        self.DeleteExistingTrainingBadRawDataFolder()
-        self.DeleteExistingTrainingGoodRawDataFolder()
+        self.DeleteExistingPredictionBadRawDataFolder()
+        self.DeleteExistingPredictionGoodRawDataFolder()
         #create new directories
         self.CreateDirectoryForGoodBadRawData()
         regex='incomeData_\d+_\d+\.csv'
@@ -143,17 +143,17 @@ class Prediction_Data_Validation:
                     SplitAtUnderScore = SplitAtDot[0].split("_")
                     if len(SplitAtUnderScore[1]) == LengthOfDateStampInFile:
                         if len(SplitAtUnderScore[2]) == LengthOfTimeStampInFile:
-                            shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Good_raw_training_path)
+                            shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Good_raw_prediction_path)
                             logging.info(f"Valid File Name!! File moved to Good Raw Folder :: { filename}")
                         else:
-                            shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Bad_raw_training_path)
+                            shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Bad_raw_prediction_path)
                             logging.info(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
 
                     else:
-                        shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Bad_raw_training_path)
+                        shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Bad_raw_prediction_path)
                         logging.info(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
                 else:
-                    shutil.copy("Training_Batch_Files/" + filename, self.validation_config.Bad_raw_training_path)
+                    shutil.copy("Prediction_Batch_Files/" + filename, self.validation_config.Bad_raw_prediction_path)
                     logging.info(f"Invalid File Name!! File moved to Bad Raw Folder :: { filename}")
 
             logging.info("filename validation completed")
@@ -170,12 +170,12 @@ class Prediction_Data_Validation:
 
         logging.info("column length validation started")
         try:
-            for file in os.listdir(os.path.join(self.validation_config.Good_raw_training_path)):
-                csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_training_path,file))
+            for file in os.listdir(os.path.join(self.validation_config.Good_raw_prediction_path)):
+                csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_prediction_path,file))
                 if csv.shape[1] == NumberofColumns:
                     logging.info(f"{file} validated for column length successfully")
                 else:
-                    shutil.move(os.path.join(self.validation_config.Good_raw_training_path,file),os.path.join(self.validation_config.Bad_raw_training_path))
+                    shutil.move(os.path.join(self.validation_config.Good_raw_prediction_path,file),os.path.join(self.validation_config.Bad_raw_prediction_path))
                     logging.info(f"Invalid Column length for File!! File moved to Bad Raw Folder :: { file}")
             logging.info("column length validation completed")
 
@@ -190,11 +190,11 @@ class Prediction_Data_Validation:
 
         logging.info("started validating missing values in whole column")
         try:
-            for file in os.listdir(self.validation_config.Good_raw_training_path):
-                csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_training_path+file))
+            for file in os.listdir(self.validation_config.Good_raw_prediction_path):
+                csv = pd.read_csv(os.path.join(self.validation_config.Good_raw_prediction_path+file))
                 for col in csv:
                     if csv[col].count() == 0:
-                        shutil.move(os.path.join(self.validation_config.Good_raw_training_path, file), os.path.join(self.validation_config.Bad_raw_training_path))
+                        shutil.move(os.path.join(self.validation_config.Good_raw_prediction_path, file), os.path.join(self.validation_config.Bad_raw_prediction_path))
                         logging.info(f"Missing values in whole Column in the File!! File moved to Bad Raw Folder :: { file}")
                         break
             logging.info("validation of missing values in whole column completed")

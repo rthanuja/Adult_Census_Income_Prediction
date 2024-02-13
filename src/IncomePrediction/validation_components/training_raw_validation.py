@@ -37,10 +37,8 @@ class Training_Data_Validation:
             ColumnNames = dic['ColName']
 
             logging.info("values from schema extracted successfully!")
-            logging.info(f"LengthOfDateStampInFile :{LengthOfDateStampInFile},
-                          LengthOfTimeStampInFile: {LengthOfTimeStampInFile},
-                          NumberofColumns: {NumberofColumns},
-                          ColumnNames : {ColumnNames}")
+            logging.info(f"LengthOfDateStampInFile :{LengthOfDateStampInFile} LengthOfTimeStampInFile: {LengthOfTimeStampInFile}\
+                         NumberofColumns: {NumberofColumns} ColumnNames : {ColumnNames}")
 
             return LengthOfDateStampInFile,LengthOfTimeStampInFile,NumberofColumns,ColumnNames
 
