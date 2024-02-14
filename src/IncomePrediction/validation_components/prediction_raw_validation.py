@@ -205,6 +205,12 @@ class Prediction_Data_Validation:
         
 
     def deletePredictionFile(self):
-
-        if os.path.exists('Prediction_Output_File/Predictions.csv'):
-            os.remove('Prediction_Output_File/Predictions.csv')
+       
+        try:
+            path = "Prediction_Output_File/"
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+                logging.info("prediction file removed successfully!")
+        except Exception as e:
+            logging.info(f"{e}::error while deleting prediction file")
+            raise customException(e,sys)

@@ -42,7 +42,7 @@ class File_Operation:
             for i in model_list:
                 i=i.split('.')
                 if i[0][-1]==str(cluster_number):
-                    i = "".join(i)
+                    i = ".".join(i)
                     filepath =os.path.join(path,i)
                     logging.info(f"the correct model for this cluster is {i} and filepath is {filepath}")
                     return filepath

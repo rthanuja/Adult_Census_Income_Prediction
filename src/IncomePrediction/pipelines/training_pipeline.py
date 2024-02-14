@@ -24,8 +24,9 @@ class TrainModel:
             X= data_tranformation_obj.initialize_data_transformation(data)
 
             list_of_clusters = X['cluster'].unique()
-
-
+            cluster_number =[]
+            model_name =[]
+            accuracy =[]
             for i in list_of_clusters:
                 cluster_data= X[X['cluster']==i] # filter the data for one cluster
                 # Prepare the feature and Label columns
@@ -39,14 +40,21 @@ class TrainModel:
 
                 #getting the best model for each of the clusters
                 
-                best_model_name,best_model = model_finder.get_best_model(x_train,y_train,x_test,y_test)
+                best_model_name,best_model,accuracy_score = model_finder.get_best_model(x_train,y_train,x_test,y_test)
+                cluster_number.append(i)
+                model_name.append(best_model_name)
+                accuracy.append(accuracy_score)
 
                 file_obj = File_Operation()
                 filename = best_model_name+str(i)+'.sav'
                 file_obj.save_model(file_path = os.path.join('artifacts',filename),
                                     obj = best_model)
-                logging.info("successful end of training")
-
+                
+            dataframe_clusters = pd.DataFrame({'Cluster_Number':cluster_number,
+                                               'Model':model_name,
+                                               'Accuracy':accuracy})
+            logging.info(f"{dataframe_clusters}")
+            logging.info("successful end of training")
         except Exception as e:
             logging.info("error occcured in training pipeline")
             raise customException(e,sys)

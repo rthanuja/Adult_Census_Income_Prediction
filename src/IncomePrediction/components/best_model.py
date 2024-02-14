@@ -80,7 +80,7 @@ class Model_finder:
         logging.info("Entered the get_best_params_for_xgboost method of the Model_Finder class")
         try:
             # initializing with different combination of parameters
-            self.param_grid_xgboost = {"n_estimators": [80,100],"max_depth": range(7, 9, 1),'learning_rate': [0.01, 0.1] }
+            self.param_grid_xgboost = {"n_estimators": [80,100,130],"max_depth": range(5, 10, 1),'learning_rate': [0.01, 0.1,0.001] }
             # Creating an object of the Grid Search class
             self.grid= GridSearchCV(estimator=self.xgb,param_grid=self.param_grid_xgboost, verbose=3,cv=5)
             # finding the best parameters
@@ -159,31 +159,31 @@ class Model_finder:
                     logging.info(f"AUC for LogisticRegression: {self.logistic_reg_score}")
                 model['LogisticRegression'] = self.lg
                 accuracy['LogisticRegression'] =self.logistic_reg_score
-            else:
-                pass
+            
             # create best model for svc
-            self.svc.fit(x_train,y_train)
-            self.prediction_svc =self.svc.predict(x_test) # prediction using the logistic regression Algorithm
+                self.svc.fit(x_train,y_train)
+                self.prediction_svc =self.svc.predict(x_test) # prediction using the logistic regression Algorithm
 
-            if len(y_test.unique()) == 1:#if there is only one label in y, then roc_auc_score returns error. We will use accuracy in that case
-                self.svc_score = accuracy_score(y_test,self.prediction_svc)
-                logging.info(f"Accuracy for svc: {self.svc_score}")
-            else:
-                self.svc_score = roc_auc_score(y_test, self.prediction_svc) # AUC for naive bayes
-                logging.info(f"AUC for svc: {self.svc_score}")
-            model['SVC'] = self.svc
-            accuracy['SVC'] =self.svc_score
+                if len(y_test.unique()) == 1:#if there is only one label in y, then roc_auc_score returns error. We will use accuracy in that case
+                    self.svc_score = accuracy_score(y_test,self.prediction_svc)
+                    logging.info(f"Accuracy for svc: {self.svc_score}")
+                else:
+                    self.svc_score = roc_auc_score(y_test, self.prediction_svc) # AUC for naive bayes
+                    logging.info(f"AUC for svc: {self.svc_score}")
+                model['SVC'] = self.svc
+                accuracy['SVC'] =self.svc_score
 
             best_model_name = max(accuracy, key=accuracy.get)
             best_model = model[best_model_name]
-
+            accuracy_model = accuracy[best_model_name]
+            
             logging.info(f"The best model is: {best_model_name} with accuracy: {accuracy[best_model_name]} and exiting get_best_model")
             
-            return best_model_name,best_model
+            return best_model_name,best_model,accuracy_model
         
 
         except Exception as e:
-            logging.info("error occured at get_best_model of Model_finder class")
+            logging.info(f"{e} : :error occured at get_best_model of Model_finder class")
             raise customException(e,sys)
 
 

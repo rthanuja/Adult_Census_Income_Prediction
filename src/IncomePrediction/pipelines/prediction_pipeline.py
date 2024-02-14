@@ -52,21 +52,23 @@ class Prediction:
                 logging.info(f"filepath ::{filepath}")
                 model = file_loader.load_model(filepath)
                 logging.info(f"model ::{model}")
-                result=(model.fit_predict(cluster_data))
+                result=(model.predict(cluster_data))
 
                 for res in result:
                     if res==0:
                         predictions.append('<=50K')
                     else:
                         predictions.append('>50K')
-
+            logging.info("predictions completed")
             final= pd.DataFrame(list(zip(predictions)),columns=['Predictions'])
+            logging.info("formed a dataframe")
             path="Prediction_Output_File/Predictions.csv"
+            os.makedirs(os.path.dirname(os.path.join(path)),exist_ok=True)
             final.to_csv(os.path.join(path),header=True,mode='a+')
             logging.info("end of prediction")
 
         except Exception as e:
-            logging.info(f"{e}: error occured while prediction")
+            logging.info(f"{type(e).__name__}:: {e} error occured while prediction")
             raise customException(e,sys)
 
         return path
