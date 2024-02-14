@@ -38,18 +38,22 @@ class Prediction:
             file_loader = File_Operation()
             kmeans = file_loader.load_model(os.path.join('artifacts','KMeans.sav'))
 
-            clusters =kmeans.predict(data)
+            clusters =kmeans.fit_predict(data)
             data['cluster'] = clusters
 
             list_of_clusters = data['cluster'].unique()
             predictions = []
-
+            
             for i in list_of_clusters:
-                cluster_data= data[data['clusters']==i]
-                cluster_data = cluster_data.drop(['clusters'],axis=1)
+                logging.info(f"cluster_number::{i}")
+                cluster_data= data[data['cluster']==i]
+                cluster_data = cluster_data.drop(['cluster'],axis=1)
                 filepath = file_loader.find_correct_model_file(i)
-                model = file_loader.load_model(filepath)#correct filepath
-                result=(model.predict(cluster_data))
+                logging.info(f"filepath ::{filepath}")
+                model = file_loader.load_model(filepath)
+                logging.info(f"model ::{model}")
+                result=(model.fit_predict(cluster_data))
+
                 for res in result:
                     if res==0:
                         predictions.append('<=50K')

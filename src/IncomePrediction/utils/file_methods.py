@@ -36,7 +36,9 @@ class File_Operation:
         try:
             logging.info("Entered the find_correct_model_file method of the File_Operation class")
             path = r"F:\Adult_Census_Income_Prediction\artifacts"
+            logging.info(f"{path}")
             model_list = os.listdir(path)
+            logging.info(f"{model_list}")
             for i in model_list:
                 i=i.split('.')
                 if i[0][-1]==str(cluster_number):
