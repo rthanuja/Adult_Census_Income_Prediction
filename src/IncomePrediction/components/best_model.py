@@ -147,18 +147,20 @@ class Model_finder:
             accuracy['GaussianNB'] =self.naive_bayes_score
 
             # create best model for logistic regression
-            self.lg.fit(x_train,y_train)
-            self.prediction_logistic_reg=self.lg.predict(x_test) # prediction using the logistic regression Algorithm
+            if len(y_train.unique())!=1:
+                self.lg.fit(x_train,y_train)
+                self.prediction_logistic_reg=self.lg.predict(x_test) # prediction using the logistic regression Algorithm
 
-            if len(y_test.unique()) == 1:#if there is only one label in y, then roc_auc_score returns error. We will use accuracy in that case
-                self.logistic_reg_score = accuracy_score(y_test,self.prediction_logistic_reg)
-                logging.info(f"Accuracy for LogisticRegression: {self.logistic_reg_score}")
+                if len(y_test.unique()) == 1:#if there is only one label in y, then roc_auc_score returns error. We will use accuracy in that case
+                    self.logistic_reg_score = accuracy_score(y_test,self.prediction_logistic_reg)
+                    logging.info(f"Accuracy for LogisticRegression: {self.logistic_reg_score}")
+                else:
+                    self.logistic_reg_score = roc_auc_score(y_test, self.prediction_logistic_reg) # AUC for naive bayes
+                    logging.info(f"AUC for LogisticRegression: {self.logistic_reg_score}")
+                model['LogisticRegression'] = self.lg
+                accuracy['LogisticRegression'] =self.logistic_reg_score
             else:
-                self.logistic_reg_score = roc_auc_score(y_test, self.prediction_logistic_reg) # AUC for naive bayes
-                logging.info(f"AUC for LogisticRegression: {self.logistic_reg_score}")
-            model['LogisticRegression'] = self.lg
-            accuracy['LogisticRegression'] =self.logistic_reg_score
-
+                pass
             # create best model for svc
             self.svc.fit(x_train,y_train)
             self.prediction_svc =self.svc.predict(x_test) # prediction using the logistic regression Algorithm
